@@ -1,0 +1,179 @@
+<!-- GROUP PAYMENT TRACKER — HTML -->
+<!-- All copyright belongs to IndiProtoHub LLp -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Payment Tracker</title>
+    <meta name="description"
+        content="Free, no-login web app to split group expenses fairly — handles members who join late and shows who owes whom. Works offline; data stays in your browser." />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1017" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Group Payment Tracker" />
+    <meta property="og:description"
+        content="Split shared expenses fairly — even for members who join late. No login, works offline." />
+    <meta property="og:type" content="website" />
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="ledger-mark" aria-hidden="true">₹</div>
+                <div>
+                    <h1>Group Payment Tracker</h1>
+                    <p class="sub">A shared-expense ledger. Splits stay fair — even for members who join late.</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toolbar -->
+        <section class="toolbar">
+            <button id="membersBtn" class="btn primary" aria-expanded="false" aria-controls="membersPanel">
+                Members <span class="count" id="memberCount">0</span>
+            </button>
+            <div class="spacer"></div>
+            <button id="addTxnBtn" class="btn accent">Add expense</button>
+        </section>
+
+        <!-- Members Panel -->
+        <section id="membersPanel" class="panel members-panel" hidden>
+            <div class="panel-grid">
+                <div class="sub-card">
+                    <h2 class="sub-h">Add member</h2>
+                    <form id="addMemberForm" class="row-inline" autocomplete="off">
+                        <label class="sr-only" for="newMemberName">New member name</label>
+                        <input id="newMemberName" type="text" placeholder="e.g. Priya" />
+                        <button type="submit" class="btn primary">Add</button>
+                    </form>
+                    <p id="memberError" class="field-error" role="alert" hidden></p>
+                    <p class="muted small">Add people any time. A member added later is charged only for expenses dated
+                        after they
+                        join — you can still override this per expense.</p>
+                </div>
+
+                <div class="sub-card">
+                    <h2 class="sub-h">Remove members</h2>
+                    <div id="membersList" class="members-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expenses -->
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Expenses</h2>
+                <span class="muted small">One row per shared cost</span>
+            </div>
+
+            <div class="table-wrap">
+                <table class="txn-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-date">Date</th>
+                            <th scope="col" class="col-title">Title</th>
+                            <th scope="col" class="col-amt num">Amount</th>
+                            <th scope="col" class="col-method">Method</th>
+                            <th scope="col" class="col-payer">Paid by</th>
+                            <th scope="col" class="col-split">Split between</th>
+                            <th scope="col" class="col-act"><span class="sr-only">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="txnBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-actions">
+                <button id="addTxnBtn2" class="btn ghost">Add expense</button>
+            </div>
+        </section>
+
+        <!-- Live running balances (always visible) -->
+        <section class="panel live-panel">
+            <div class="panel-head">
+                <h2>Running balances</h2>
+                <span class="muted small">Updates as you type</span>
+            </div>
+            <div id="liveStrip" class="live-strip" aria-live="off"></div>
+        </section>
+
+        <!-- Totals, Calculate, Clear -->
+        <section class="panel footer-panel">
+            <div class="totals">
+                <div class="total-box">
+                    <span class="muted small">Total expenses</span>
+                    <span id="totalAmount" class="total-amt num">₹0.00</span>
+                </div>
+                <div class="footer-actions">
+                    <button id="calcBtn" class="btn primary lg">Calculate settlement</button>
+                    <button id="clearBtn" class="btn danger">Clear all</button>
+                </div>
+            </div>
+
+            <!-- Settlement (revealed by Calculate, then kept live) -->
+            <section id="settlement" class="settlement" aria-label="Settlement results" hidden>
+                <p id="settleStatus" class="sr-only" aria-live="polite"></p>
+            </section>
+
+            <div id="exportBar" class="export-bar" hidden>
+                <button id="copyBtn" class="btn ghost">Copy summary</button>
+                <button id="exportTxtBtn" class="btn ghost">Download .txt</button>
+                <button id="whatsappBtn" class="btn whatsapp">Share on WhatsApp</button>
+            </div>
+
+            <div class="data-bar">
+                <span class="muted small">Backup</span>
+                <button id="restoreBtn" class="btn ghost sm">Import data</button>
+                <input id="restoreFile" type="file" accept="application/json,.json"
+                    aria-label="Choose a backup file to import" hidden />
+                <button id="mergeBtn" class="btn ghost sm">Import & Merge</button>
+                <input id="mergeFile" type="file" accept="application/json,.json"
+                    aria-label="Choose a backup file to import & merge" hidden />
+                <button id="backupBtn" class="btn ghost sm">Export data</button>
+                <span class="muted small data-hint">Saves/loads everything as a <code>.json</code> file</span>
+            </div>
+        </section>
+
+        <footer class="foot">
+            Saved only in this browser (localStorage). No login, no account, nothing leaves your device unless you
+            export or share.
+            <br><br>
+            &copy; 2026 All copyright belongs to IndiProtoHub LLP
+        </footer>
+    </div>
+
+    <!-- Undo toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+        <span id="toastMsg"></span>
+        <button id="toastUndo" class="btn-toast">Undo</button>
+    </div>
+
+    <!-- Clear-all dialog -->
+    <div id="clearDialog" class="dialog-backdrop" hidden>
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="clearTitle" aria-describedby="clearDesc">
+            <h2 id="clearTitle">Clear all data?</h2>
+            <p id="clearDesc" class="muted">This permanently deletes every member and every expense, and resets the
+                saved data
+                in this browser. This can't be undone.</p>
+            <div class="dialog-actions">
+                <button id="clearExport" class="btn ghost">Download backup first</button>
+                <button id="clearConfirm" class="btn danger">Delete everything</button>
+                <button id="clearExpenses" class="btn danger">Keep members & clear expenses</button>
+                <button id="clearCancel" class="btn ghost">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+
+    <!-- All copyright belongs to IndiProtoHub LLP -->
+
+</body>
+
+</html>
