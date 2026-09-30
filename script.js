@@ -1,4 +1,4 @@
-/* GROUP PAYMENT TRACKER — script */
+/* GROUP PAYMENT TRACKER — SCRIPT */
 /* All copyright belongs to IndiProtoHub LLP */
 
 'use strict';
