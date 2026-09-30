@@ -13,7 +13,7 @@ let state = loadState();
 let settlementRevealed = false;   // becomes true after first Calculate (then stays live)
 
 /* --- money + date helpers --- */
-function fmtP(paise) { return inr2.format((paise || 0) / 100); }        // exact, 2dp
+function fmtP(paise) { return inr2.format((paise || 0) / 100); }        // exact, 2 decimal point
 function fmtRupees(rupees) { return inr0.format(rupees || 0); }         // whole-rupee (settlements)
 function toPaise(str) {
   if (str == null) return null;
