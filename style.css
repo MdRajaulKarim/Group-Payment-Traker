@@ -67,7 +67,7 @@
      box-sizing: border-box;
  }
 
- /* Hide the page's vertical scrollbar (page still scrolls via wheel/touch/keys). */
+ /* Hide the page vertical scrollbar */
  html {
      -webkit-text-size-adjust: 100%;
      scrollbar-width: none;
