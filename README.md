@@ -1,184 +1,641 @@
 <!-- GROUP PAYMENT TRACKER — README -->
   <!-- © 2026 All copyright belongs to IndiProtoHub LLP -->
 
-# Group Payment Tracker
+# 💰 Group Payment Tracker
 
-Group Payment Tracker is a modern web application built for friends, roommates, travel groups  &amp; families to simplify shared expense management. Users calculate each person's share and generate an optimized settlement. The application works entirely offline, keeping all financial information private while providing fast &amp; accurate calculations.
+### Split expenses. Track balances. Settle up — without accounts or servers.
 
-A **no-login** web app for splitting shared expenses in a group
-(trips, flatmates, team lunches). Plain HTML/CSS/JS — **zero dependencies, no
-build step**. Open `index.html` and it works offline. All data is saved in the
-browser's `localStorage`; nothing leaves the device unless you export or share.
+**Group Payment Tracker** is a privacy-first web application built for managing shared expenses among friends, roommates, travel groups, teams & families to simplify shared expense management.
 
-Design direction: **a ledger.** Ruled rows, quiet grey chrome, and big
-tabular-figure numerals so amounts line up like a bank statement. Colour is used
-only where it means something — owed / owes / settled — and each of those also
-carries a sign and a word so the state survives greyscale and colour-blindness.
+Calculate everyone's exact share, track running balances and generate an optimized **who-pays-whom settlement** — all directly in your browser.
 
----
+<p align="center">
+  <a href="https://mdrajaulkarim.github.io/Group-Payment-Traker/">
+    <strong>🚀 Try Group Payment Tracker Live →</strong>
+  </a>
+</p>
 
-## Using it
+<p align="center">
+  <img src="https://img.shields.io/badge/No%20Login-✓-brightgreen" alt="No Login">
+  <img src="https://img.shields.io/badge/Offline-✓-blue" alt="Works Offline">
+  <img src="https://img.shields.io/badge/Zero%20Dependencies-✓-orange" alt="Zero Dependencies">
+  <img src="https://img.shields.io/badge/Privacy-Local%20Storage-purple" alt="Privacy">
+  <img src="https://img.shields.io/badge/License-Proprietary-red" alt="License">
+</p>
 
-1. **Members** → *Add member* — add everyone. Add more at any time.
-2. **Add expense** — a row with Date, Title, Amount, Method (Cash/UPI), Paid by,
-   and **Split between** — a floating dropdown of checkboxes (with *All* /
-   *Clear*); the chosen names stay visible in the dropdown's summary.
-3. Watch **Running balances** update live as you type.
-4. **Calculate settlement** — full breakdown plus a minimal *who-pays-whom* list.
-5. **Copy**, **Download .txt**, or **Share on WhatsApp**. **Clear all** to reset everything, 
-or **Keep members & clear expenses** to start a new trip with the same group.
-
-To **delete an expense**, click the **✕** on the right of its row; a message asks
-you to click **✕** again within 3 seconds to confirm (and a 7-second **Undo**
-appears after it's gone).
-
-**Backup & restore:** *Export data* saves everything to a
-`group-payments-backup-<date>.json` file. You have two ways to load it back: *Import data* replaces your current data entirely, while *Import & Merge* intelligently combines the file with your current data (matching members by name and skipping duplicate expenses). Use it to move a trip between browsers or devices, or just to keep a safe copy — the settlement`.txt` / WhatsApp exports are summaries, this is the real data.
-
-**Prorating:** a new expense defaults to splitting between the members active on
-its date, so someone who joins late isn't charged for earlier expenses. It's a
-*default*, not a cage — tick or untick anyone on any row (e.g. someone skipped
-that meal).
+> **Track expenses. Split fairly. Settle simply.**
 
 ---
 
-## What changed in this rewrite
+## 🌐 Live Demo
 
-### Correctness (Part 1)
-- **No more stale exports.** Results are recomputed from state on every edit, and
-  every export is built fresh at click time. There is no cached summary, so you
-  can never download numbers that don't match the screen. *(1.1)*
-- **One total, one definition.** The header total and the settlement total are
-  the same function. Rows with no/again-non-positive amounts are excluded and the
-  settlement lists exactly which rows were dropped and why. *(1.2, 1.9)*
-- **Editable participants.** The *Split between* cell is a per-row dropdown of
-  checkboxes showing **names**, not a read-only count. You can exclude anyone from
-  a single expense, and a member added after a blank row was created can now be
-  ticked in. *(1.3)*
-- **Money is integer paise end to end** with a deterministic rounding rule
-  (below), so shares and balances reconcile exactly. Settlement transfers are
-  rounded to whole rupees for real-world cash/UPI. *(1.4)*
-- **Split membership is always visible** (names in the dropdown summary), not
-  hidden in a tooltip. *(1.5)*
-- **Mobile table → cards** under 620px; no sideways scrolling. *(1.6)*
-- **Contrast fixed and audited.** Every semantic colour meets WCAG AA (≥4.5:1);
-  the dark theme overrides **every** semantic token; recomputed ratios are in a
-  comment block at the top of `style.css`. Owed/owes/settled also use a sign
-  (`+ / − / =`) and a word. *(1.7)*
-- **Safer destructive actions.** Deleting an expense is a **two-step, 3-second
-  confirm** — the ✕ (on the right of the row) arms and shows a message; a second
-  click within 3 seconds deletes it, then a 7-second **Undo** toast appears.
-  Removing a member is also undoable. **Clear all** is a proper dialog offering
-  *Download backup first*, with corrected copy. *(1.8)*
-- **Smaller fixes:** removing a member now refreshes the expense rows; payer
-  correction is persisted (never a silent render-time mutation); `loadState`
-  validates/repairs any saved object; **duplicate member names are rejected**
-  (re-adding a removed name reactivates that member instead of duplicating);
-  **Date** is a real editable column (defaults to today); amount uses
-  `step="any"` (no coarse ₹10 arrow jumps); untitled rows are flagged. *(1.9)*
+### [🚀 Launch Group Payment Tracker](https://mdrajaulkarim.github.io/Group-Payment-Traker/)
 
-### Usability (Part 2)
-Mobile-first cards; a teaching empty state; always-on **Running balances**;
-per-row *"₹X each"* hints; copy-to-clipboard; WhatsApp share with a length
-warning/truncation. The **Split between** control is a floating dropdown that
-stays put while you use it and **only one is open at a time**; it closes on an
-outside click but won't close while nobody is selected (it nudges you to pick
-someone), so no expense can be silently split among no one. The expenses table no
-longer shows a spurious vertical scrollbar (it scrolls horizontally only when it
-must). **Backup & restore** (Export/Import `.json`) keeps a full copy of your
-data and moves it between devices; import is undoable. Running balances render as
-colour-accented **stat tiles** and each settlement row shows a sign badge +
-amount, so who-owes-what reads at a glance.
+Open the app directly in your browser — no installation, registration, or login required.
 
-### Accessibility (Part 3)
-Every control has an accessible name; Members button uses
-`aria-expanded`/`aria-controls`; visible `:focus-visible` outlines everywhere;
-touch targets ≥44px on touch devices; the settlement is announced via `aria-live`
-**once on Calculate** (not re-announced on every keystroke); fully
-keyboard-operable including the Clear dialog (Escape / backdrop to close).
+The current app is designed around a simple workflow:
 
-### Deliberately *not* done
-- **No auto who-owes-whom in exact paise.** Transfers are whole rupees on
-  purpose — nobody hands over 34 paise. Per-person balances remain exact.
-- **No tabs/routing/settings screen** — the information architecture is
-  unchanged, as requested.
-- **The v1 `localStorage` key is not deleted** after migration; it's kept as a
-  backup so no saved trip can be lost.
+**Members → Expenses → Running balances → Settlement → Share / Export → Backup**
 
 ---
 
-## Data & storage
+## ✨ Why Group Payment Tracker?
 
-### State shape (`gpt_state_v2`)
+Group expenses get complicated fast.
 
-```jsonc
+One person pays for the hotel. Someone else pays for dinner. Another person covers transport. By the end, everyone is asking:
+
+> **Who owes whom — and how much?**
+
+Group Payment Tracker turns those scattered payments into a clear expense ledger and a practical settlement plan.
+
+### Built around a few principles
+
+- **Simple:** One page, no unnecessary menus or setup.
+- **Private:** Data is stored in your browser.
+- **Accurate:** Money is calculated in integer paise.
+- **Flexible:** Every expense can have its own participants.
+- **Practical:** Settlement transfers are rounded to whole rupees for real-world cash/UPI payments.
+- **Accessible:** Balance states use symbols and words as well as colour.
+
+> **A shared expense tracker should be as easy to use as a calculator — while keeping your financial data private.**
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 👥 **Group Members** | Add, remove and manage members at any time |
+| 💸 **Shared Expenses** | Record expenses with title, date, amount, payment method and payer |
+| ☑️ **Flexible Splitting** | Choose exactly who participates in each expense |
+| 📊 **Running Balances** | See who has paid, owes, or is owed in real time |
+| 🧮 **Exact Calculations** | Money is calculated using integer paise to avoid floating-point errors |
+| 🤝 **Optimized Settlement** | Generate a minimal who-pays-whom settlement |
+| 📋 **Copy Results** | Copy settlement details directly to the clipboard |
+| 📱 **WhatsApp Sharing** | Share settlement information with your group |
+| 📄 **Text Export** | Download settlement results as `.txt` |
+| 💾 **Backup & Restore** | Export and import complete application data |
+| 🔄 **Import & Merge** | Combine a backup with existing data without duplicating expenses |
+| 📴 **Works Offline** | No server or internet connection required after loading |
+| 🔐 **Privacy First** | Data stays in your browser's `localStorage` |
+| 🌙 **Dark Theme** | Accessible light and dark themes |
+| 📱 **Responsive UI** | Desktop tables automatically become mobile-friendly cards |
+| ♿ **Accessible** | Keyboard support, focus states, ARIA labels and accessible controls |
+
+---
+
+# 📖 How to Use
+
+### 1. 👥 Add Members
+
+Go to **Members → Add Member** and add everyone participating in the group.
+
+Members can be added at any time.
+
+### 2. 💳 Add an Expense
+
+Each expense contains:
+
+- Date
+- Title
+- Amount
+- Payment method
+- Paid by
+- People sharing the expense
+
+The **Split Between** control lets you select exactly who should participate.
+
+You can quickly:
+
+- Select **All**
+- **Clear** selections
+- Add/remove individual members
+
+### 3. 📊 Monitor Running Balances
+
+Balances update automatically as expenses are entered.
+
+Each member's balance clearly indicates whether they:
+
+```text
++ Owed
+- Owes
+= Settled
+```
+
+Example:
+
+```text
+RAJAUL       + ₹35.00   GETS BACK
+HABIB        - ₹20.00   OWES
+MOSTAQUE     - ₹65.00   OWES
+USAMA        - ₹10.00   OWES
+```
+
+Each state is communicated through **sign + amount + word**, so the meaning remains clear even without relying on colour.
+
+### 4. 🧮 Calculate Settlement
+
+Click **Calculate Settlement** to generate:
+
+- Total group spending
+- Individual balances
+- Exact amounts owed
+- Optimized payment transfers
+- Who should pay whom
+
+For example:
+
+```text
+RAJAUL pays MOSTAQUE ₹35
+HABIB  pays MOSTAQUE ₹20
+USAMA    pays MOSTAQUE ₹10
+```
+
+The goal is to minimize unnecessary transactions.
+
+### 5. 📤 Share or Export
+
+Settlement results can be:
+
+- 📋 Copied to clipboard
+- 📄 Downloaded as `.txt`
+- 💬 Shared through WhatsApp
+
+You can also export the complete application state as JSON for backup.
+
+---
+
+# 💾 Backup & Restore
+
+Your data is stored locally in the browser.
+
+### Export
+
+Use **Export Data** to create a file such as:
+
+```text
+group-payments-backup-YYYY-MM-DD.json
+```
+
+This contains the complete application state.
+
+### Import
+
+**Import Data** replaces the current data with the selected backup.
+
+### Import & Merge
+
+**Import & Merge** combines the backup with the current data.
+
+The merge process:
+
+- Matches members by name
+- Preserves existing members
+- Skips duplicate expenses
+- Combines compatible data
+
+This makes it useful for moving a trip between browsers or devices.
+
+> Settlement `.txt` files and WhatsApp messages are summaries.
+> The JSON backup is the actual restorable application data.
+
+---
+
+# 📅 Smart Prorating
+
+New expenses automatically default to members who were active on the expense date.
+
+For example:
+
+```text
+Trip starts:        1 August
+Member A joins:     1 August
+Member B joins:     5 August
+Expense:            3 August
+```
+
+Member B won't automatically be included in the 3 August expense.
+
+However, this is only a **default**.
+
+You can manually include or exclude anyone from any individual expense.
+
+---
+
+# 🧮 Accurate Money Calculations
+
+All financial calculations use **integer paise**.
+
+No floating-point values are persisted or accumulated.
+
+For example:
+
+```text
+₹100.00 ÷ 3
+
+Participant 1 → ₹33.34
+Participant 2 → ₹33.33
+Participant 3 → ₹33.33
+
+Total         → ₹100.00
+```
+
+The application uses deterministic rounding so every expense reconciles exactly.
+
+### Rounding rule
+
+For an expense of `A` paise split among `n` participants:
+
+```text
+base = floor(A / n)
+
+remainder = A - (base × n)
+```
+
+Each participant receives `base` paise.
+
+The remaining paise are assigned to:
+
+1. The payer, if they are participating
+2. Otherwise, the first participant
+
+Therefore:
+
+```text
+Sum of shares = Original expense
+```
+
+Settlement transfers are rounded to whole rupees for practical cash/UPI payments, while exact per-person balances remain available in the application.
+
+---
+
+# 🛡️ Safe Data Handling
+
+The application uses:
+
+```text
+Browser localStorage
+        │
+        ├── Members
+        └── Transactions
+```
+
+Nothing is sent to a remote server by the application.
+
+Your information remains on the device unless **you explicitly export or share it**.
+
+---
+
+# 🔄 Data Model
+
+The current state uses `gpt_state_v2`.
+
+```json
 {
   "version": 2,
   "members": [
-    { "id": "ab12c", "name": "Priya", "active": true }
+    {
+      "id": "ab12c",
+      "name": "Priya",
+      "active": true
+    }
   ],
   "transactions": [
     {
       "id": "de34f",
       "title": "Auto fare",
-      "amountPaise": 12000,        // integer paise (₹120.00); null = not entered
-      "method": "Cash",            // "Cash" | "UPI"
-      "paidBy": "ab12c",           // member id; always one of `participants`
-      "participants": ["ab12c"],   // member ids sharing THIS expense (editable)
-      "date": "2026-08-06",        // YYYY-MM-DD, editable
-      "createdAt": 1754460000000   // ms timestamp (ordering/debug)
+      "amountPaise": 12000,
+      "method": "Cash",
+      "paidBy": "ab12c",
+      "participants": ["ab12c"],
+      "date": "2026-08-06",
+      "createdAt": 1754460000000
     }
   ]
 }
 ```
 
-Removing a member who already appears in an expense **soft-removes** them
-(`active:false`) so historical splits stay balanced; they show as *removed* in
-results. A member with no history is deleted outright.
+---
 
-### Migration from `gpt_state_v1`
+# 🔄 Migration & Data Recovery
 
-On load the app looks for `gpt_state_v2` first. If it's absent but a
-`gpt_state_v1` record exists, it is migrated once and written to `gpt_state_v2`
-(the v1 key is left untouched as a backup):
+The application supports migration from:
 
-| v1 field | v2 field | conversion |
-|---|---|---|
-| `amount` (rupee string, e.g. `"120"`) | `amountPaise` | `round(parseFloat × 100)`; blank/NaN → `null` |
-| `createdAt` (ms) | `date` | `YYYY-MM-DD` from the timestamp; also kept as `createdAt` |
-| `method` | `method` | `"UPI"` stays `"UPI"`, everything else → `"Cash"` |
-| `members`, `paidBy`, `participants` | same | carried over; ids preserved |
+```text
+gpt_state_v1
+      ↓
+normalize()
+      ↓
+gpt_state_v2
+```
 
-Any partial or corrupted object (v1 *or* v2) is passed through a `normalize()`
-repair pass that coerces types, drops references to non-existent members, and
-guarantees the payer is one of the participants. If nothing usable is found, the
-app starts from a clean empty state — saved data is never silently discarded.
+When loading data, the application:
 
-### Rounding rule
+- Validates stored objects
+- Repairs malformed values
+- Removes references to nonexistent members
+- Ensures the payer is a valid participant
+- Preserves historical member references
+- Converts old rupee values to integer paise
+- Keeps the old v1 storage key as a backup
 
-- All money is stored and computed as **integer paise**. No floats are ever
-  persisted or accumulated.
-- For an expense of `A` paise split between `n` participants: each gets
-  `floor(A / n)` paise, and the indivisible remainder `A − floor(A/n)·n` (always
-  `< n` paise) is added to **one** participant — the payer if they're in the
-  split, otherwise the first participant. Per-expense shares therefore sum to
-  **exactly** `A`, and every member's balance (`paid − share`) nets to exactly
-  zero across the group. The UI names whoever absorbed the extra paise.
-  - *Example:* ₹100 between 3 → ₹33.34 + ₹33.33 + ₹33.33 = ₹100.00 (not ₹99.99).
-- **Settlement transfers** ("who pays whom") are rounded to **whole rupees** for
-  practical cash/UPI payment; rounding residual is nudged so the transfers still
-  sum to zero. The exact per-person balances are always shown alongside.
+If no usable data exists, the application starts with a clean state.
+
+Saved data is not silently discarded.
 
 ---
 
-## Files
+# 🗑️ Safe Destructive Actions
+
+Accidental deletion is handled carefully.
+
+### Delete Expense
+
+The first `✕` click arms deletion.
+
+A second click must happen within **3 seconds** to confirm.
+
+After deletion:
+
+```text
+Expense deleted
+      ↓
+Undo available for 7 seconds
+```
+
+### Remove Member
+
+Removing a member with historical expenses uses a soft removal so existing expense calculations remain valid.
+
+### Clear All
+
+The clear dialog provides an option to:
+
+**Download a backup before clearing.**
+
+---
+
+# ♿ Accessibility
+
+Accessibility is built into the application rather than added as an afterthought.
+
+Implemented features include:
+
+- Accessible control names
+- `aria-expanded`
+- `aria-controls`
+- Visible `:focus-visible` indicators
+- Touch targets of at least 44px on touch devices
+- Keyboard-operable controls
+- Escape-to-close dialogs
+- Backdrop-to-close dialogs
+- `aria-live` settlement announcements
+- Semantic status indicators
+- Colour-independent balance states
+
+The interface uses:
+
+```text
+Symbol + Word + Colour
+```
+
+instead of relying on colour alone.
+
+---
+
+# 📱 Responsive Design
+
+The desktop expense table automatically changes into mobile-friendly cards below **620px**.
+
+```text
+Desktop
+┌─────────────────────────────────────────────┐
+│ Date │ Expense │ Amount │ Paid By │ Split   │
+└─────────────────────────────────────────────┘
+
+                ↓
+
+Mobile
+
+┌─────────────────────────┐
+│ Expense                 │
+│ Auto fare               │
+│                         │
+│ Amount       ₹120       │
+│ Paid by      Priya      │
+│ Split        Priya      │
+└─────────────────────────┘
+```
+
+No unnecessary sideways scrolling on mobile.
+
+---
+
+# 🎨 Design Philosophy
+
+The interface follows a **ledger-inspired design**.
+
+```text
+┌───────────────────────────────────────┐
+│ DATE       DESCRIPTION        AMOUNT  │
+├───────────────────────────────────────┤
+│ 06 AUG     Auto fare          ₹120    │
+│ 06 AUG     Lunch              ₹450    │
+│ 07 AUG     Hotel              ₹2,400  │
+└───────────────────────────────────────┘
+```
+
+The visual language uses:
+
+- Ruled rows
+- Quiet grey chrome
+- Tabular numerals
+- Clear hierarchy
+- Minimal decoration
+- Semantic colours
+- Large, readable amounts
+
+### Colour is reserved for meaningful states such as:
+---
+
+| Status | Colour Sample | Common Name | Hex | Meaning |
+|---|---|---|---|---|
+| `+ Owed` | 🟩 | **Dark Green** | `#166534` | Positive — is owed money |
+| `- Owes` | 🟥 | **Dark Red** | `#B91C1C` | Negative — owes money |
+| `= Settled` | ⬛ | **Slate Gray** | `#475569` | Zero — settled |
+
+---
+
+# 🛠️ Correctness Improvements
+
+This rewrite introduced several important correctness improvements.
+
+### <u>No stale exports</u>
+
+Results are recomputed from current application state whenever required.
+
+Exports are generated fresh at click time.
+
+### <u>One total definition</u>
+
+The header total and settlement total use the same calculation logic.
+
+Invalid or non-positive amounts are excluded consistently.
+
+### <u>Editable participants</u>
+
+Each expense has its own participant selection.
+
+Members can be included or excluded independently for every expense.
+
+### <u>Integer-paise arithmetic</u>
+
+All stored and calculated money values use integer paise.
+
+This prevents floating-point accumulation errors.
+
+### <u>Persistent payer information</u>
+
+Payer corrections are persisted rather than being silently changed during rendering.
+
+### <u>Duplicate member protection</u>
+
+Duplicate member names are rejected.
+
+Re-adding a previously removed member reactivates the existing member rather than creating a duplicate.
+
+### <u>Editable dates</u>
+
+Every expense has an editable date and defaults to the current date.
+
+---
+
+# 📈 Usability Improvements
+
+The application includes:
+
+- Mobile-first expense cards
+- Teaching-oriented empty state
+- Always-visible running balances
+- Per-expense `₹X each` hints
+- Clipboard support
+- WhatsApp sharing
+- WhatsApp length warning/truncation
+- Floating participant selector
+- Outside-click handling
+- Single-open dropdown behaviour
+- Undoable imports
+- Undoable deletions
+- Backup and restore
+- Balance stat tiles
+- Settlement sign badges
+
+---
+
+# 🧩 Technology
+
+Built entirely with standard web technologies:
+
+| Technology | Purpose |
+|---|---|
+| **HTML5** | Structure & semantic markup |
+| **CSS3** | Responsive ledger-inspired interface |
+| **JavaScript** | State management & calculations |
+| **localStorage** | Local data persistence |
+| **GitHub Pages** | Static hosting |
+
+### Dependencies
+
+```text
+Dependencies: 0
+Build tools:  0
+Backend:      0
+Database:     0
+Login:        0
+```
+
+---
+
+# 📁 Project Structure
+
+```text
+Group-Payment-Traker/
+│
+├── index.html
+├── style.css
+├── script.js
+└── README.md
+```
 
 | File | Purpose |
 |---|---|
-| `index.html` | Structure and accessible markup. |
-| `style.css` | Ledger theme, tokens, light/dark, responsive cards, contrast audit. |
-| `script.js` | State, migration, prorating, paise math, live results, export. |
-| `README.md` | Features, workflows, data storage schemas and mathematical rounding rules. |
+| `index.html` | Application structure and accessible markup |
+| `style.css` | Ledger theme, light/dark mode, responsive cards, contrast |
+| `script.js` | State management, migration, calculations, prorating, exports |
+| `README.md` | Project documentation |
 
 ---
-*© 2026 All copyright belongs to IndiProtoHub LLP*
+
+# 🚫 Deliberately Not Included
+
+Some functionality was intentionally left out to keep the application focused.
+
+### Exact-paise settlement transfers
+
+Settlement transfers are rounded to whole rupees because practical cash/UPI payments generally don't require transferring fractions of a rupee.
+
+Individual balances remain exact.
+
+### Tabs / Routing / Settings
+
+The application intentionally keeps its simple single-page information architecture.
+
+### Automatic removal of v1 storage
+
+The old `localStorage` key is retained after migration as a backup.
+
+---
+
+# 🤝 Contributing
+
+Issues, suggestions and pull requests are welcome.
+
+For bugs, include:
+
+- what you expected
+- what happened
+- steps to reproduce
+- browser/device details when relevant
+
+---
+
+# 🔗 Links
+
+### 💻 GitHub Repository
+
+**[View the source code →](https://github.com/mdrajaulkarim/Group-Payment-Traker)**
+
+The live application is linked at the top of this README to avoid repeating the same link.
+
+---
+
+# 👨‍💻 Project
+
+**Group Payment Tracker**
+
+A privacy-first web application built for managing shared expenses and simplifying group expense management.
+
+<p align="center">
+  <br><br>
+  <a href="https://mdrajaulkarim.github.io/Group-Payment-Traker/">
+    🚀 <strong>Launch Group Payment Tracker</strong>
+  </a>
+  <br>
+  <strong>💸 Track expenses. Split fairly. Settle simply.</strong>
+  <br><br>
+</p>
+
+---
+<center>© 2026 <strong>IndiProtoHub LLP</strong> — All rights reserved.</center>
