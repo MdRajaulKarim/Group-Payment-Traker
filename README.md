@@ -10,10 +10,11 @@
 Calculate everyone's exact share, track running balances and generate an optimized **who-pays-whom settlement** — all directly in your browser.
 
 <p align="center">
+  <strong>🚀 Try <br> </strong>
   <a href="https://mdrajaulkarim.github.io/Group-Payment-Traker/">
-    <strong>🚀 Try Group Payment Tracker Live →</strong>
+    <strong> Group Payment Tracker Live →</strong>
   </a>
-</p>
+</p><br>
 
 <p align="center">
   <img src="https://img.shields.io/badge/No%20Login-✓-brightgreen" alt="No Login">
