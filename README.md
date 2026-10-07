@@ -121,9 +121,9 @@ Each member's balance clearly indicates whether they:
 Example:
 
 ```text
-RAJAUL       + ₹35.00   GETS BACK
+RAJAUL       + ₹65.00   GETS BACK
 HABIB        - ₹20.00   OWES
-MOSTAQUE     - ₹65.00   OWES
+MOSTAQUE     - ₹35.00   OWES
 USAMA        - ₹10.00   OWES
 ```
 
@@ -142,9 +142,9 @@ Click **Calculate Settlement** to generate:
 For example:
 
 ```text
-RAJAUL pays MOSTAQUE ₹35
-HABIB  pays MOSTAQUE ₹20
-USAMA    pays MOSTAQUE ₹10
+MOSTAQUE pays RAJAUL ₹35
+HABIB  pays RAJAUL ₹20
+USAMA    pays RAJAUL ₹10
 ```
 
 The goal is to minimize unnecessary transactions.
